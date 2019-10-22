@@ -1,12 +1,49 @@
 # Web Toolbox
 
+## 9.2.0
+
+- added PagingStrategy property to PageOptions and refactoring extension methods "ToPagedResult" to take strategy into account
+- refactoring extension methods "ToPagedResult" for PageSortOptions to reuse extension methods of parent class PageOptions
+- update unit tests
+
+## 9.1.0
+
+- Removed unnecessary DeserializationPagedResult, JsonConvertor and ISchemaFilter: the same result can be achieved with simple inheritance.
+- PagedResult<T> changed to use inheritance, kept for backwards compatibility.
+- Added new PagedResult<T, EmbeddedT> and Embedded<T> for correct HAL property name.
+- Added new action to ValuesController demonstrate the difference between the two PagedResults. 
+- Added EmbeddeValueDto to demonstrate the use of EmbeddedT.
+- Removed StringExtensions: ToCamelCase only used for camelcasing bodyparameter names (and contained private extension methods); 
+	now all parameter names are corrected in consistent way in 1 pass.
+- Updated EndPointPathsAndParamsToLower to reflect this.
+- Added new ToPagedResult<T, EmbeddedT> to PageOptionsExtensions, with less parameters => values from ActionContextDescriptor.
+- Updated GenerateLink to include all query parameters, not just the Page(Sort)Options.
+- Updated unit tests.
+
+## 9.0.2
+
+- Bugfix: SwaggerResponseDefinitions - retrieve the controller attributes from declaring Type and not from  the method
+
+## 9.0.1
+
+- Bugfix: pageOptions second to last page now has next page reference
+- Added default value property to page options so they show up on swagger
+
+## 9.0.0
+
+- upgrade to netstandard2.0
+
+## 8.0.1
+
+- ToPagedResult<T>: removed new() restriction
+
 ## 8.0.0
 
 - json serialization: initialized/assigned properties with a value different from null will be serialized; properties (collection, string, ...) with value null won't be serialized
 
 ## 7.0.1
 
-- PagedResult: removed new() restriction
+- PagedResult<T>: removed new() restriction
 
 ## 7.0.0
 
