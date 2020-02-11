@@ -1,16 +1,16 @@
-﻿using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Digipolis.Web.Swagger
 {
     internal class EndPointPathsAndParamsToLower : IDocumentFilter
     {
-        public void Apply(SwaggerDocument swaggerDoc, DocumentFilterContext context)
+        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            var newPaths = new Dictionary<string, PathItem>();
+            var newPaths = new OpenApiPaths();
             foreach (var path in swaggerDoc.Paths)
             {
                 var res = HandlePath(path.Value);
@@ -19,28 +19,44 @@ namespace Digipolis.Web.Swagger
             swaggerDoc.Paths = newPaths;
         }
 
-        private PathItem HandlePath(PathItem value)
+        private OpenApiPathItem HandlePath(OpenApiPathItem value)
         {
             value.Parameters = handleParameters(value.Parameters);
 
-            if (value.Get != null) value.Get.Parameters = handleParameters(value.Get.Parameters);
-            if (value.Post != null) value.Post.Parameters = handleParameters(value.Post.Parameters);
-            if (value.Put != null) value.Put.Parameters = handleParameters(value.Put.Parameters);
-            if (value.Patch != null) value.Patch.Parameters = handleParameters(value.Patch.Parameters);
-            if (value.Delete != null) value.Delete.Parameters = handleParameters(value.Delete.Parameters);
-            if (value.Head != null) value.Head.Parameters = handleParameters(value.Head.Parameters);
-            if (value.Options != null) value.Options.Parameters = handleParameters(value.Options.Parameters);
+            foreach (var operation in value.Operations)
+                switch (operation.Key)
+                {
+                    case OperationType.Get:
+                        value.Operations[OperationType.Get].Parameters = handleParameters(value.Operations[OperationType.Get].Parameters);
+                        break;
+                    case OperationType.Post:
+                        value.Operations[OperationType.Post].Parameters = handleParameters(value.Operations[OperationType.Post].Parameters);
+                        break;
+                    case OperationType.Put:
+                        value.Operations[OperationType.Put].Parameters = handleParameters(value.Operations[OperationType.Put].Parameters);
+                        break;
+                    case OperationType.Patch:
+                        value.Operations[OperationType.Patch].Parameters = handleParameters(value.Operations[OperationType.Patch].Parameters);
+                        break;
+                    case OperationType.Delete:
+                        value.Operations[OperationType.Delete].Parameters = handleParameters(value.Operations[OperationType.Delete].Parameters);
+                        break;
+                    case OperationType.Head:
+                        value.Operations[OperationType.Head].Parameters = handleParameters(value.Operations[OperationType.Head].Parameters);
+                        break;
+                    case OperationType.Options:
+                        value.Operations[OperationType.Options].Parameters = handleParameters(value.Operations[OperationType.Options].Parameters);
+                        break;
+                }
             return value;
         }
 
-        private IList<IParameter> handleParameters(IList<IParameter> parameters)
+        private IList<OpenApiParameter> handleParameters(IList<OpenApiParameter> parameters)
         {
             if (parameters == null) return null;
-            foreach (var item in parameters.Where(x => new[]{ "query", "path", "body"}.Contains(x.In)))
-            {
+            foreach (var item in parameters.Where(x => x.In.HasValue && new Collection<ParameterLocation> { ParameterLocation.Query, ParameterLocation.Path }.Contains(x.In.Value)))
                 item.Name = item.Name?.ToLowerInvariant();
-            }
             return parameters;
-        }        
+        }
     }
 }

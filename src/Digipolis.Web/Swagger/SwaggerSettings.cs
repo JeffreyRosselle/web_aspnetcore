@@ -19,7 +19,7 @@ namespace Digipolis.Web.Swagger
             var xmlPath = Path.Combine(basePath, fileName);
             if (File.Exists(xmlPath)) options.IncludeXmlComments(xmlPath);
 
-            options.OperationFilter<AddFileUploadParams>();
+            //options.OperationFilter<AddFileUploadParams>();
             options.OperationFilter<AddConsumeProducesValues>();
             options.OperationFilter<ValidRefUri>();
             options.DocumentFilter<SetVersionInPaths>();
